@@ -1,28 +1,35 @@
 {
   "name": "portifoliomurilo",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "1.0.0",
+  "description": "O objetivo desse projeto é apresentar de maneira objetiva e bem-estililizada os projetos um pouco da pessoa do Murilo.",
+  "main": "eslint.config.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muristop10/PortifolioMurilo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/muristop10/PortifolioMurilo/issues"
+  },
+  "homepage": "https://github.com/muristop10/PortifolioMurilo#readme",
   "dependencies": {
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
     "react-icons": "^5.7.0",
-    "react-router-dom": "^7.18.1",
-    "styled-components": "^6.4.4"
+    "react-router-dom": "^7.18.2",
+    "styled-components": "^6.5.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@vitejs/plugin-react": "^6.0.3",
-    "eslint": "^10.6.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.3",
-    "globals": "^17.7.0",
-    "vite": "^8.1.1"
+    "@vitejs/plugin-react": "^6.0.5",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^17.11.0",
+    "vite": "^8.2.1"
   }
 }

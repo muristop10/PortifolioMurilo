@@ -1,11 +1,607 @@
-import ComingSoon from '../components/ComingSoon.jsx'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import styled, { keyframes } from 'styled-components'
+import { Section, Container } from '../components/ui'
+import RevealWrapper from '../components/RevealWrapper'
+
+const photos = [
+  {
+    id: 1,
+    src: 'https://picsum.photos/seed/galeria-01/1200/900',
+    label: 'Luz da Manhã',
+    category: 'Paisagem',
+    aspect: '4 / 3',
+  },
+  {
+    id: 2,
+    src: 'https://picsum.photos/seed/galeria-02/900/1200',
+    label: 'Silêncio Urbano',
+    category: 'Fotografia de Rua',
+    description: 'Registro em preto e branco no centro antigo.',
+    aspect: '3 / 4',
+  },
+  {
+    id: 3,
+    src: 'https://picsum.photos/seed/galeria-03/1300/850',
+    label: 'Horizonte Azul',
+    category: 'Paisagem',
+    aspect: '16 / 10',
+  },
+  {
+    id: 4,
+    src: 'https://picsum.photos/seed/galeria-04/1000/1000',
+    label: 'Detalhe em Concreto',
+    category: 'Arquitetura',
+    aspect: '1 / 1',
+  },
+  {
+    id: 5,
+    src: 'https://picsum.photos/seed/galeria-05/900/1200',
+    label: 'Retrato ao Entardecer',
+    category: 'Retrato',
+    description: 'Luz natural, sem flash, hora dourada.',
+    aspect: '3 / 4',
+  },
+  {
+    id: 6,
+    src: 'https://picsum.photos/seed/galeria-06/1300/850',
+    label: 'Trilha Nebulosa',
+    category: 'Viagem',
+    aspect: '16 / 10',
+  },
+  {
+    id: 7,
+    src: 'https://picsum.photos/seed/galeria-07/1200/900',
+    label: 'Still Life 01',
+    category: 'Still Life',
+    aspect: '4 / 3',
+  },
+  {
+    id: 8,
+    src: 'https://picsum.photos/seed/galeria-08/1000/1250',
+    label: 'Últimos Passos do Dia',
+    category: 'Fotografia de Rua',
+    aspect: '4 / 5',
+  },
+]
+
+const Eyebrow = styled.span`
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.9rem;
+`
+
+const PageTitle = styled.h1`
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+`
+
+const PageSubtitle = styled.p`
+  max-width: 46ch;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+`
+
+const IntroBlock = styled.div`
+  margin-bottom: clamp(3rem, 6vw, 5rem);
+`
+
+const Marker = styled.div`
+  position: absolute;
+  left: -63px;
+  top: 1.4rem;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-strong);
+  transition: transform var(--transition-base), background var(--transition-base),
+    border-color var(--transition-base), box-shadow var(--transition-base);
+  z-index: 2;
+
+  @media (max-width: 640px) {
+    left: -46px;
+    width: 11px;
+    height: 11px;
+  }
+`
+
+const Img = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease, filter 0.7s ease;
+`
+
+const CategoryTag = styled.span`
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-pill);
+  background: rgba(5, 6, 13, 0.55);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border-soft);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+  opacity: 0.85;
+  transition: opacity var(--transition-base), transform var(--transition-base);
+`
+
+const LabelBlock = styled.div`
+  transform: translateY(10px);
+  opacity: 0.92;
+  transition: transform var(--transition-base), opacity var(--transition-base);
+`
+
+const Title = styled.h3`
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  color: var(--text-primary);
+`
+
+const Description = styled.p`
+  margin-top: 0.35rem;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+`
+
+const Overlay = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: clamp(1.1rem, 3vw, 1.75rem);
+  background: linear-gradient(
+    to top,
+    rgba(5, 6, 13, 0.88) 0%,
+    rgba(5, 6, 13, 0.35) 45%,
+    transparent 75%
+  );
+  opacity: 0.8;
+  transition: opacity var(--transition-base), background var(--transition-base);
+`
+
+const ImageFrame = styled.div`
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  aspect-ratio: var(--aspect, 4 / 3);
+  width: 100%;
+  max-height: 500px;
+  max-width: 640px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 10px 30px rgba(5, 6, 13, 0.35);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base),
+    transform var(--transition-base);
+
+  @media (max-width: 1024px) {
+    max-width: 480px;
+  }
+
+  @media (max-width: 640px) {
+    max-width: 100%;
+  }
+`
+
+const ImageTrigger = styled.button`
+  display: block;
+  width: 100%;
+  transition: transform 0.7s ease, filter 0.7s ease;
+  padding: 0;
+  text-align: left;
+  cursor: zoom-in;
+`
+
+const GalleryList = styled.ul`
+  position: relative;
+  padding-left: 96px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 40px;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 2px;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--gradient-start) 8%,
+      var(--gradient-end) 92%,
+      transparent 100%
+    );
+    opacity: 0.5;
+  }
+
+  @media (max-width: 640px) {
+    padding-left: 64px;
+
+    &::before {
+      left: 24px;
+    }
+  }
+`
+
+const GalleryItem = styled.li`
+  position: relative;
+  padding-bottom: clamp(3rem, 7vw, 5.5rem);
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  &:hover ${Marker} {
+    transform: scale(1.5);
+    background: var(--gradient-main);
+    border-color: transparent;
+    box-shadow: var(--shadow-glow);
+  }
+
+  &:hover ${ImageFrame} {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-4px);
+  }
+
+  &:hover ${Img} {
+    transform: scale(1.06);
+    filter: brightness(1.04) saturate(1.1);
+  }
+
+  &:hover ${Overlay} {
+    opacity: 1;
+  }
+
+  &:hover ${LabelBlock} {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  &:hover ${CategoryTag} {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+`
+
+const BackToTopWrap = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(3rem, 6vw, 5rem);
+`
+
+const BackToTopButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.9rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  transition: background var(--transition-base), color var(--transition-base),
+    transform var(--transition-base), box-shadow var(--transition-base);
+
+  svg {
+    transition: transform var(--transition-base);
+  }
+
+  &:hover {
+    background: var(--gradient-main);
+    color: #fff;
+    border-color: transparent;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-glow);
+  }
+
+  &:hover svg {
+    transform: translateY(-2px);
+  }
+`
+
+function ArrowUpIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 19V5M12 5L6 11M12 5L18 11"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function CloseIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M6 6L18 18M18 6L6 18"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`
+
+const fadeOut = keyframes`
+  from { opacity: 1; }
+  to { opacity: 0; }
+`
+
+const scaleIn = keyframes`
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+`
+
+const scaleOut = keyframes`
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to { opacity: 0; transform: scale(0.94) translateY(10px); }
+`
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  background: rgba(5, 6, 13, 0.86);
+  backdrop-filter: blur(10px);
+  cursor: zoom-out;
+  animation: ${({ $isClosing }) => ($isClosing ? fadeOut : fadeIn)} 0.25s ease forwards;
+`
+
+const ModalContent = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: min(1080px, 92vw);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: default;
+  animation: ${({ $isClosing }) => ($isClosing ? scaleOut : scaleIn)} 0.28s ease forwards;
+`
+
+const CloseButton = styled.button`
+  position: fixed;
+  top: clamp(1rem, 3vw, 1.75rem);
+  right: clamp(1rem, 3vw, 1.75rem);
+  z-index: 1001;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(18, 20, 42, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  transition: background var(--transition-base), transform var(--transition-base),
+    box-shadow var(--transition-base);
+
+  &:hover {
+    background: var(--gradient-main);
+    border-color: transparent;
+    box-shadow: var(--shadow-glow);
+    transform: scale(1.08);
+  }
+`
+
+const ModalImageWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-height: 72vh;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-void);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-glow);
+`
+
+const ModalImage = styled.img`
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  display: block;
+`
+
+const ModalCaption = styled.div`
+  margin-top: 1.5rem;
+  text-align: center;
+  max-width: 60ch;
+`
+
+const ModalTag = styled.span`
+  display: inline-block;
+  margin-bottom: 0.6rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-soft);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+`
+
+const ModalTitle = styled.h3`
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  color: var(--text-primary);
+`
+
+const ModalDescription = styled.p`
+  margin-top: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+`
 
 export default function Gallery() {
+  const [activePhoto, setActivePhoto] = useState(null)
+  const [isClosing, setIsClosing] = useState(false)
+  const closeButtonRef = useRef(null)
+  const lastFocusedRef = useRef(null)
+
+  const openModal = (photo) => {
+    lastFocusedRef.current = document.activeElement
+    setIsClosing(false)
+    setActivePhoto(photo)
+    document.body.style.overflow = 'hidden'
+  }
+
+  const closeModal = () => {
+    setIsClosing(true)
+  }
+
+  const handleAnimationEnd = () => {
+    if (isClosing) {
+      setActivePhoto(null)
+      setIsClosing(false)
+    }
+  }
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    if (!activePhoto || isClosing) return undefined
+
+    closeButtonRef.current?.focus()
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') closeModal()
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+      lastFocusedRef.current?.focus()
+    }
+  }, [activePhoto, isClosing])
+
   return (
-    <ComingSoon
-      kicker="// galeria"
-      title="Fotos e hobbies chegando"
-      description="Essa página vai reunir minhas fotos e hobbies pessoais. Volta aqui em breve!"
-    />
+    <>
+      <Section>
+        <Container>
+          <RevealWrapper>
+            <IntroBlock>
+              <Eyebrow>Fotografias</Eyebrow>
+              <PageTitle>Galeria</PageTitle>
+              <PageSubtitle>
+                Uma seleção de registros e trabalhos pessoais. Role para conhecer
+                cada um deles.
+              </PageSubtitle>
+            </IntroBlock>
+          </RevealWrapper>
+
+          <GalleryList>
+            {photos.map((photo, index) => (
+              <GalleryItem key={photo.id}>
+                <Marker aria-hidden="true" />
+
+                <RevealWrapper delay={index * 0.06}>
+                  <ImageTrigger
+                    type="button"
+                    onClick={() => openModal(photo)}
+                    aria-label={`Ampliar foto: ${photo.label}`}
+                  >
+                    <ImageFrame style={{ '--aspect': photo.aspect }}>
+                      <Img src={photo.src} alt={photo.label} loading="lazy" decoding="async" />
+                      <CategoryTag>{photo.category}</CategoryTag>
+                      <Overlay>
+                        <LabelBlock>
+                          <Title>{photo.label}</Title>
+                          {photo.description && <Description>{photo.description}</Description>}
+                        </LabelBlock>
+                      </Overlay>
+                    </ImageFrame>
+                  </ImageTrigger>
+                </RevealWrapper>
+              </GalleryItem>
+            ))}
+          </GalleryList>
+
+          <RevealWrapper>
+            <BackToTopWrap>
+              <BackToTopButton onClick={scrollToTop} type="button">
+                <ArrowUpIcon />
+                Voltar ao topo
+              </BackToTopButton>
+            </BackToTopWrap>
+          </RevealWrapper>
+        </Container>
+      </Section>
+
+      {activePhoto &&
+        createPortal(
+          <ModalOverlay 
+            onClick={closeModal} 
+            $isClosing={isClosing}
+            onAnimationEnd={handleAnimationEnd}
+          >
+            <ModalContent
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Foto ampliada: ${activePhoto.label}`}
+              onClick={(event) => event.stopPropagation()}
+              $isClosing={isClosing}
+            >
+              <CloseButton
+                ref={closeButtonRef}
+                type="button"
+                onClick={closeModal}
+                aria-label="Fechar"
+              >
+                <CloseIcon />
+              </CloseButton>
+
+              <ModalImageWrap>
+                <ModalImage src={activePhoto.src} alt={activePhoto.label} />
+              </ModalImageWrap>
+
+              <ModalCaption>
+                <ModalTag>{activePhoto.category}</ModalTag>
+                <ModalTitle>{activePhoto.label}</ModalTitle>
+                {activePhoto.description && (
+                  <ModalDescription>{activePhoto.description}</ModalDescription>
+                )}
+              </ModalCaption>
+            </ModalContent>
+          </ModalOverlay>,
+          document.body
+        )}
+    </>
   )
 }

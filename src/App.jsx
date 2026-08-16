@@ -25,7 +25,6 @@ export default function App() {
           <Route path="/projetos" element={<Projects />} />
           <Route path="/galeria" element={<Gallery />} />
           <Route path="/contato" element={<Contact />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <Footer />

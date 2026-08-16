@@ -8,8 +8,6 @@ import CodeCard from '../components/CodeCard.jsx'
 import Typewriter from '../components/Typewriter.jsx'
 import { skillGroups } from '../data/skills.js'
 
-/* ---------- Hero ---------- */
-
 const Hero = styled(Section)`
   padding-top: 168px;
 `
@@ -85,8 +83,6 @@ const Blob = styled.div`
   border-radius: 50%;
 `
 
-/* ---------- Sobre ---------- */
-
 const AboutText = styled.p`
   color: var(--text-muted);
   line-height: 1.8;
@@ -97,8 +93,6 @@ const AboutText = styled.p`
     margin-top: 16px;
   }
 `
-
-/* ---------- Skills ---------- */
 
 const SkillGroupWrap = styled.div`
   margin-top: 40px;
@@ -121,8 +115,6 @@ const PillRow = styled.div`
   flex-wrap: wrap;
   gap: 10px;
 `
-
-/* ---------- Atualmente ---------- */
 
 const NowGrid = styled.div`
   display: grid;
@@ -163,9 +155,7 @@ const NowText = styled.p`
   font-size: 0.9rem;
   line-height: 1.6;
 `
-
-/* ---------- Fechamento ---------- */
-
+    
 const ClosingSection = styled(Section)`
   text-align: center;
 `
