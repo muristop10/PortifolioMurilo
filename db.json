@@ -1,0 +1,32 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "name": "SuperGeeks - Jogo da Dengue"
+    },
+    {
+      "id": 2,
+      "name": "Algoritmo Python - Sistema de Notas"
+    },
+    {
+      "id": 3,
+      "name": "UserHub - Crud de Usuários"
+    }
+  ],
+  "profile": {
+    "skills": [
+      "TypeScript",
+      "React",
+      "Node.js",
+      "Python",
+      "POO",
+      "Git/Github",
+      "Consumo de APIs",
+      "Figma",
+      "PostgreSQL",
+      "Delphi",
+      "Css, Scss, Tailwind",
+      "Tokens/JWT"
+    ]
+  }
+}

@@ -1,16 +1,46 @@
-# React + Vite
+# Portifólio - Murilo Eduardo Thomé
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+O objetivo desse projeto é apresentar de maneira objetiva e bem-estililizada os projetos um pouco da pessoa do Murilo.
 
-Currently, two official plugins are available:
+## Dependências
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Esse projeto utiliza o NPM como operador de terminal - é recomendável que você instale o Node.js, e o NPM virá junto. 
 
-## React Compiler
+[Baixar o Node](https://nodejs.org/en)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Além disso, baixe também o Git, para clonar o repositório:
 
-## Expanding the ESLint configuration
+[Baixar o Git Bash](https://git-scm.com/install/windows)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Tendo os dois operadores de terminal, clone o repositório: 
+
+```
+git clone https://github.com/muristop10/PortifolioMurilo
+```
+
+Uma vez clonado, navegue até a pasta raiz do projeto:
+
+```terminal 
+cd PortifolioMurilo
+```
+
+E instale as dependências:
+
+```powershell
+npm install
+```
+
+Agora, é só rodar os dois últimos comandos em terminais separados (mas na mesma pasta): 
+
+```powershell
+npm run dev
+```
+
+```powershell
+npm run server
+```
+
+E voilá!
+
+###  *Espero que goste!*
+
