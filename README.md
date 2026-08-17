@@ -1,46 +1,42 @@
-# Portifólio - Murilo Eduardo Thomé
+# 🌐 Portfólio - Murilo Eduardo Thomé
 
-O objetivo desse projeto é apresentar de maneira objetiva e bem-estililizada os projetos um pouco da pessoa do Murilo.
+> ⭐ **Gostou do projeto? Considere deixar uma estrela no repositório para apoiar meu trabalho e acompanhar futuras atualizações!**
 
-## Dependências
+Meu portfólio pessoal desenvolvido para apresentar minha trajetória, habilidades e projetos na área de desenvolvimento de software.
 
-Esse projeto utiliza o NPM como operador de terminal - é recomendável que você instale o Node.js, e o NPM virá junto. 
+## Acesse o projeto
 
-[Baixar o Node](https://nodejs.org/en)
+**Site:** https://portfolio-murilo-roan.vercel.app/
 
-Além disso, baixe também o Git, para clonar o repositório:
+## Funcionalidades
 
-[Baixar o Git Bash](https://git-scm.com/install/windows)
+- Apresentação profissional
+- Exibição de projetos
+- Informações sobre minha trajetória
+- Links para redes sociais e contato
+- Layout responsivo para desktop e dispositivos móveis
 
-Tendo os dois operadores de terminal, clone o repositório: 
+## Executando localmente
 
+Clone o repositório:
+```bash
+git clone https://github.com/muristop10/muristop10.git
 ```
-git clone https://github.com/muristop10/PortifolioMurilo
-```
 
-Uma vez clonado, navegue até a pasta raiz do projeto:
+Acesse a pasta do projeto:
 
-```terminal 
+```bash
 cd PortifolioMurilo
 ```
 
-E instale as dependências:
+Instale as dependências:
 
-```powershell
+```bash
 npm install
 ```
 
-Agora, é só rodar os dois últimos comandos em terminais separados (mas na mesma pasta): 
+Inicie a aplicação:
 
-```powershell
+```bash
 npm run dev
 ```
-
-```powershell
-npm run server
-```
-
-E voilá!
-
-###  *Espero que goste!*
-
