@@ -3,67 +3,119 @@ import { createPortal } from 'react-dom'
 import styled, { keyframes } from 'styled-components'
 import { Section, Container } from '../components/ui'
 import RevealWrapper from '../components/RevealWrapper'
+import React from 'react'
 
+/**
+ * Cada item pode ser uma foto (padrão) ou um vídeo (type: 'video').
+ * Para vídeos: `src` é o arquivo de vídeo e `poster` é a imagem de capa
+ * usada como thumbnail na grade — a modal só carrega o vídeo em si
+ * quando o usuário clica.
+ *
+ * Exemplo de item de vídeo (duplique e ajuste os campos):
+ * {
+ *   id: 13,
+ *   type: 'video',
+ *   src: '/videos/seu-video.mp4',
+ *   poster: '/images/poster-do-video.jpg',
+ *   label: 'Nome do Vídeo',
+ *   category: 'Categoria',
+ *   aspect: '16 / 9',
+ * }
+ */
 const photos = [
   {
     id: 1,
-    src: 'https://picsum.photos/seed/galeria-01/1200/900',
-    label: 'Luz da Manhã',
-    category: 'Paisagem',
-    aspect: '4 / 3',
+    src: '/images/bateria1.jpg',
+    label: 'Bateria',
+    category: 'Bateria',
+    aspect: '3 / 4',
   },
   {
     id: 2,
-    src: 'https://picsum.photos/seed/galeria-02/900/1200',
-    label: 'Silêncio Urbano',
-    category: 'Fotografia de Rua',
-    description: 'Registro em preto e branco no centro antigo.',
+    src: '/images/bateria2.jpg',
+    label: 'Bateria 2',
+    category: 'Bateria',
     aspect: '3 / 4',
   },
   {
     id: 3,
-    src: 'https://picsum.photos/seed/galeria-03/1300/850',
-    label: 'Horizonte Azul',
-    category: 'Paisagem',
-    aspect: '16 / 10',
+    type: 'video',
+    src: '/images/bateria3.mp4',
+    poster: '/images/bateria3.mp4',
+    label: 'Bateria 3',
+    category: 'Bateria',
+    aspect: '9 / 16',
   },
   {
     id: 4,
-    src: 'https://picsum.photos/seed/galeria-04/1000/1000',
-    label: 'Detalhe em Concreto',
-    category: 'Arquitetura',
-    aspect: '1 / 1',
+    src: '/images/viagens1.jpg',
+    label: 'Viagens 1',
+    category: 'Viagens',
+    aspect: '16 / 9',
   },
   {
     id: 5,
-    src: 'https://picsum.photos/seed/galeria-05/900/1200',
-    label: 'Retrato ao Entardecer',
-    category: 'Retrato',
-    description: 'Luz natural, sem flash, hora dourada.',
+    src: '/images/viagens2.jpg',
+    label: 'Viagens 2',
+    category: 'Viagens',
     aspect: '3 / 4',
   },
   {
     id: 6,
-    src: 'https://picsum.photos/seed/galeria-06/1300/850',
-    label: 'Trilha Nebulosa',
-    category: 'Viagem',
-    aspect: '16 / 10',
-  },
-  {
-    id: 7,
-    src: 'https://picsum.photos/seed/galeria-07/1200/900',
-    label: 'Still Life 01',
-    category: 'Still Life',
+    src: '/images/viagens3.jpg',
+    label: 'Viagens 3',
+    category: 'Viagens',
     aspect: '4 / 3',
   },
   {
+    id: 7,
+    src: '/images/maia1.jpg',
+    label: 'Maia',
+    category: 'Pets',
+    aspect: '3 / 4',
+  },
+  {
     id: 8,
-    src: 'https://picsum.photos/seed/galeria-08/1000/1250',
-    label: 'Últimos Passos do Dia',
-    category: 'Fotografia de Rua',
-    aspect: '4 / 5',
+    src: '/images/amora1.jpg',
+    label: 'Amora',
+    category: 'Pets',
+    aspect: '9 / 16',
+  },
+  {
+    id: 9,
+    src: '/images/amoraMaia.jpg',
+    label: 'Amora e Maia',
+    category: 'Pets',
+    aspect: '4 / 3',
+  },
+  {
+    id: 10,
+    src: '/images/murilo-elo1.jpg',
+    label: 'Murilo e Elo',
+    category: 'Elo',
+    aspect: '4 / 3',
+  },
+  {
+    id: 11,
+    src: '/images/murilo-elo2.jpg',
+    label: 'Murilo e Elo 2',
+    category: 'Elo',
+    aspect: '4 / 3',
+  },
+  {
+    id: 12,
+    src: '/images/murilo-elo3.jpg',
+    label: 'Murilo e Elo 3',
+    category: 'Elo',
+    aspect: '6 / 7',
   },
 ]
+
+// Decide se um aspect ratio ("largura / altura") é retrato (mais alto que largo).
+function isPortraitAspect(aspect) {
+  const [width, height] = aspect.split('/').map(Number)
+  return width / height < 1
+}
 
 const Eyebrow = styled.span`
   display: inline-block;
@@ -139,6 +191,31 @@ const CategoryTag = styled.span`
   transition: opacity var(--transition-base), transform var(--transition-base);
 `
 
+/* Botão de play sobreposto às thumbnails de vídeo. */
+const PlayButton = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 6, 13, 0.55);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  z-index: 1;
+  transition: transform var(--transition-base), background var(--transition-base),
+    box-shadow var(--transition-base);
+
+  svg {
+    margin-left: 3px;
+  }
+`
+
 const LabelBlock = styled.div`
   transform: translateY(10px);
   opacity: 0.92;
@@ -172,14 +249,24 @@ const Overlay = styled.div`
   transition: opacity var(--transition-base), background var(--transition-base);
 `
 
+/**
+ * IMPORTANTE: só usamos `max-width` pra limitar o tamanho — nunca
+ * `max-height` junto de `width: 100%`, porque isso força o navegador a
+ * cortar a altura sem reduzir a largura, distorcendo o aspect-ratio
+ * (era exatamente o bug que deixava as fotos retrato "espremidas").
+ * Em vez disso, fotos retrato ($portrait) recebem um max-width menor,
+ * então a altura derivada do aspect-ratio já fica proporcional e
+ * controlada. O max-height de 78vh é só uma rede de segurança para
+ * telas muito baixas — raramente é acionado.
+ */
 const ImageFrame = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-md);
   aspect-ratio: var(--aspect, 4 / 3);
   width: 100%;
-  max-height: 500px;
-  max-width: 640px;
+  max-width: ${({ $portrait }) => ($portrait ? '380px' : '640px')};
+  max-height: 78vh;
   background: var(--bg-elevated);
   border: 1px solid var(--border-soft);
   box-shadow: 0 10px 30px rgba(5, 6, 13, 0.35);
@@ -187,18 +274,17 @@ const ImageFrame = styled.div`
     transform var(--transition-base);
 
   @media (max-width: 1024px) {
-    max-width: 480px;
+    max-width: ${({ $portrait }) => ($portrait ? '320px' : '480px')};
   }
 
   @media (max-width: 640px) {
-    max-width: 100%;
+    max-width: ${({ $portrait }) => ($portrait ? 'min(78vw, 300px)' : '100%')};
   }
 `
 
 const ImageTrigger = styled.button`
   display: block;
   width: 100%;
-  transition: transform 0.7s ease, filter 0.7s ease;
   padding: 0;
   text-align: left;
   cursor: zoom-in;
@@ -273,6 +359,13 @@ const GalleryItem = styled.li`
     opacity: 1;
     transform: translateY(-2px);
   }
+
+  &:hover ${PlayButton} {
+    background: var(--gradient-main);
+    border-color: transparent;
+    box-shadow: var(--shadow-glow);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
 `
 
 const BackToTopWrap = styled.div`
@@ -336,6 +429,14 @@ function CloseIcon() {
         strokeWidth="2"
         strokeLinecap="round"
       />
+    </svg>
+  )
+}
+
+function PlayIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5v14l11-7z" />
     </svg>
   )
 }
@@ -434,6 +535,15 @@ const ModalImage = styled.img`
   display: block;
 `
 
+const ModalVideo = styled.video`
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  display: block;
+`
+
 const ModalCaption = styled.div`
   margin-top: 1.5rem;
   text-align: center;
@@ -464,16 +574,66 @@ const ModalDescription = styled.p`
   font-size: 1rem;
 `
 
+function PhotoThumbnail({ item, index, onOpen }) {
+  return (
+    <RevealWrapper delay={index * 0.06}>
+      <ImageTrigger
+        type="button"
+        onClick={() => onOpen(item)}
+        aria-label={`Ampliar foto: ${item.label}`}
+      >
+        <ImageFrame style={{ '--aspect': item.aspect }} $portrait={isPortraitAspect(item.aspect)}>
+          <Img src={item.src} alt={item.label} loading="lazy" decoding="async" />
+          <CategoryTag>{item.category}</CategoryTag>
+          <Overlay>
+            <LabelBlock>
+              <Title>{item.label}</Title>
+              {item.description && <Description>{item.description}</Description>}
+            </LabelBlock>
+          </Overlay>
+        </ImageFrame>
+      </ImageTrigger>
+    </RevealWrapper>
+  )
+}
+
+function VideoThumbnail({ item, index, onOpen }) {
+  return (
+    <RevealWrapper delay={index * 0.06}>
+      <ImageTrigger
+        type="button"
+        onClick={() => onOpen(item)}
+        aria-label={`Assistir vídeo: ${item.label}`}
+      >
+        <ImageFrame style={{ '--aspect': item.aspect }} $portrait={isPortraitAspect(item.aspect)}>
+          <Img src={item.poster} alt={item.label} loading="lazy" decoding="async" />
+          <PlayButton aria-hidden="true">
+            <PlayIcon />
+          </PlayButton>
+          <CategoryTag>{item.category}</CategoryTag>
+          <Overlay>
+            <LabelBlock>
+              <Title>{item.label}</Title>
+              {item.description && <Description>{item.description}</Description>}
+            </LabelBlock>
+          </Overlay>
+        </ImageFrame>
+      </ImageTrigger>
+    </RevealWrapper>
+  )
+}
+
 export default function Gallery() {
   const [activePhoto, setActivePhoto] = useState(null)
   const [isClosing, setIsClosing] = useState(false)
   const closeButtonRef = useRef(null)
   const lastFocusedRef = useRef(null)
+  const videoRef = useRef(null)
 
-  const openModal = (photo) => {
+  const openModal = (item) => {
     lastFocusedRef.current = document.activeElement
     setIsClosing(false)
-    setActivePhoto(photo)
+    setActivePhoto(item)
     document.body.style.overflow = 'hidden'
   }
 
@@ -507,6 +667,11 @@ export default function Gallery() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
       document.body.style.overflow = ''
+      // Pausa o vídeo (se houver) sempre que a modal fecha ou troca de item.
+      if (videoRef.current) {
+        videoRef.current.pause()
+        videoRef.current.currentTime = 0
+      }
       lastFocusedRef.current?.focus()
     }
   }, [activePhoto, isClosing])
@@ -527,28 +692,14 @@ export default function Gallery() {
           </RevealWrapper>
 
           <GalleryList>
-            {photos.map((photo, index) => (
-              <GalleryItem key={photo.id}>
+            {photos.map((item, index) => (
+              <GalleryItem key={item.id}>
                 <Marker aria-hidden="true" />
-
-                <RevealWrapper delay={index * 0.06}>
-                  <ImageTrigger
-                    type="button"
-                    onClick={() => openModal(photo)}
-                    aria-label={`Ampliar foto: ${photo.label}`}
-                  >
-                    <ImageFrame style={{ '--aspect': photo.aspect }}>
-                      <Img src={photo.src} alt={photo.label} loading="lazy" decoding="async" />
-                      <CategoryTag>{photo.category}</CategoryTag>
-                      <Overlay>
-                        <LabelBlock>
-                          <Title>{photo.label}</Title>
-                          {photo.description && <Description>{photo.description}</Description>}
-                        </LabelBlock>
-                      </Overlay>
-                    </ImageFrame>
-                  </ImageTrigger>
-                </RevealWrapper>
+                {item.type === 'video' ? (
+                  <VideoThumbnail item={item} index={index} onOpen={openModal} />
+                ) : (
+                  <PhotoThumbnail item={item} index={index} onOpen={openModal} />
+                )}
               </GalleryItem>
             ))}
           </GalleryList>
@@ -566,15 +717,19 @@ export default function Gallery() {
 
       {activePhoto &&
         createPortal(
-          <ModalOverlay 
-            onClick={closeModal} 
+          <ModalOverlay
+            onClick={closeModal}
             $isClosing={isClosing}
             onAnimationEnd={handleAnimationEnd}
           >
             <ModalContent
               role="dialog"
               aria-modal="true"
-              aria-label={`Foto ampliada: ${activePhoto.label}`}
+              aria-label={
+                activePhoto.type === 'video'
+                  ? `Vídeo: ${activePhoto.label}`
+                  : `Foto ampliada: ${activePhoto.label}`
+              }
               onClick={(event) => event.stopPropagation()}
               $isClosing={isClosing}
             >
@@ -588,7 +743,19 @@ export default function Gallery() {
               </CloseButton>
 
               <ModalImageWrap>
-                <ModalImage src={activePhoto.src} alt={activePhoto.label} />
+                {activePhoto.type === 'video' ? (
+                  <ModalVideo
+                    ref={videoRef}
+                    src={activePhoto.src}
+                    poster={activePhoto.poster}
+                    controls
+                    autoPlay
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <ModalImage src={activePhoto.src} alt={activePhoto.label} />
+                )}
               </ModalImageWrap>
 
               <ModalCaption>
